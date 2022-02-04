@@ -59,7 +59,7 @@ const fetchWithCache = async (xhr: FakeXMLHttpRequest, config: Config): Promise<
   };
   config.onResponseFromServer?.(xhr, responseData);
   mkdirSync(config.snapshotDir, { recursive: true });
-  writeFileSync(resolve(config.snapshotDir, `${cacheKey}.json`), JSON.stringify(responseData));
+  writeFileSync(resolve(config.snapshotDir, `${cacheKey}.json`), JSON.stringify(responseData, undefined, 2));
   return responseData;
 };
 
