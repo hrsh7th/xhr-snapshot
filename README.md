@@ -7,7 +7,7 @@ Create snapshot of XMLHttpRequest for testing.
 
 1. Setup [jest](https://jestjs.io)
 
-```
+```tsx
 # jest.config.js
 
 module.exports = {
@@ -19,14 +19,14 @@ module.exports = {
 }
 ```
 
-```
+```tsx
 # jest.setup.js
 
 import 'whatwg-fetch';
 import { resolve } from 'path';
-import { install } from 'xhr-snapshot';
+import { configure } from 'xhr-snapshot';
 
-install({
+configure({
   snapshotDir: resolve(__dirname, '__xhr_snapshots__'),
   updateSnapshot: process.argv.includes('--update-snapshot'),
 })
@@ -34,7 +34,7 @@ install({
 
 2. Run your jest tests with actual fetch requests.
 
-```
+```tsx
 import { normalize } from '../src/normalize';
 
 describe('awesome tests', () => {
