@@ -1,4 +1,4 @@
-import { fakeXhr, config } from "nise";
+import { fakeXhr, FakeXMLHttpRequest } from "nise";
 import { createHash } from 'crypto';
 import { resolve } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
@@ -8,9 +8,9 @@ type Config = {
   snapshotDir: string;
   updateSnapshot?: boolean;
   responseDelay?: number;
-  onResponseFromServer?: (xhr: config, responseData: ResponseData) => void,
-  onResponseFromCache?: (xhr: config, responseData: ResponseData) => void;
-  createCacheKey?: (xhr: config) => string;
+  onResponseFromServer?: (xhr: FakeXMLHttpRequest, responseData: ResponseData) => void,
+  onResponseFromCache?: (xhr: FakeXMLHttpRequest, responseData: ResponseData) => void;
+  createCacheKey?: (xhr: FakeXMLHttpRequest) => string;
 };
 
 type ResponseData = {
@@ -40,7 +40,7 @@ export const configure = (config: Config) => {
 /**
  * fetch with the cache checking.
  */
-const fetchWithCache = async (xhr: config, config: Config): Promise<ResponseData> => {
+const fetchWithCache = async (xhr: FakeXMLHttpRequest, config: Config): Promise<ResponseData> => {
   const cacheKey = (config.createCacheKey ?? createCacheKeyDefault)(xhr);
   if (existsSync(resolve(config.snapshotDir, `${cacheKey}.json`)) && !config.updateSnapshot) {
     const responseData = JSON.parse(readFileSync(resolve(config.snapshotDir, `${cacheKey}.json`)).toString('utf-8')) as ResponseData;
@@ -66,7 +66,7 @@ const fetchWithCache = async (xhr: config, config: Config): Promise<ResponseData
 /**
  * The default implementation of config.createCacheKey.
  */
-const createCacheKeyDefault = (xhr: config) => {
+const createCacheKeyDefault = (xhr: FakeXMLHttpRequest) => {
   const url = new URL(xhr.url);
   return createHash('md5').update(JSON.stringify([
     xhr.method,
